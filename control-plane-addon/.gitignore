@@ -1,0 +1,7 @@
+/addon/node_modules/
+/addon/dist/
+
+*.js
+!_*.js
+*.d.ts
+/node_modules/
