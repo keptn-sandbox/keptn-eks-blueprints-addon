@@ -21,7 +21,11 @@ type KeptnControlPlaneParams = {
     namespace: string,
     helmrepo: string,
     version: string,
-    enableLoadbalancer: boolean
+    enableLoadbalancer: boolean,
+    enableIngress: boolean,
+    ingressHostname: string,
+    ingressAnnotations: {},
+    ingressSecretName: string,
 }
 
 const defaultKeptnControlPlaneParams: KeptnControlPlaneParams = {
@@ -31,7 +35,11 @@ const defaultKeptnControlPlaneParams: KeptnControlPlaneParams = {
     namespace: "keptn",
     helmrepo: "https://storage.googleapis.com/keptn-installer",
     version: "0.11.4",
-    enableLoadbalancer: false
+    enableLoadbalancer: false,
+    enableIngress: false,
+    ingressHostname: "",
+    ingressAnnotations: {},
+    ingressSecretName: "",
 }
 
 export class KeptnControlPlaneAddOn implements ClusterAddOn {
@@ -40,6 +48,63 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
 
     constructor(params: Partial<KeptnControlPlaneParams>) {        
         this.props = {...defaultKeptnControlPlaneParams, ...params}
+    }
+
+    /**
+     * Creates namespace, which is a prerequisite for service account creation and subsequent chart execution.
+     * @param clusterInfo 
+     * @returns 
+     * 
+     * 
+    */
+    protected createIngress(clusterInfo: ClusterInfo): KubernetesManifest {
+        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-ingress-struct", {
+            cluster: clusterInfo.cluster,
+            manifest: [
+                {
+                    "apiVersion": "networking.k8s.io/v1",
+                    "kind": "Ingress",
+                    "metadata": {
+                      "name": "keptn-ingress",
+                      "namespace": this.props.namespace,
+                      "annotations": this.props.ingressAnnotations,
+                    },
+                    "spec": {
+                      "tls": [
+                        {
+                          "hosts": [
+                            this.props.ingressHostname
+                          ],
+                          "secretName": this.props.ingressSecretName
+                        }
+                      ],
+                      "rules": [
+                        {
+                          "host": this.props.ingressHostname,
+                          "http": {
+                            "paths": [
+                              {
+                                "path": "/",
+                                "pathType": "Prefix",
+                                "backend": {
+                                  "service": {
+                                    "name": "api-gateway-nginx",
+                                    "port": {
+                                      "number": 80
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }    
+            ],
+            overwrite: true,
+            prune: true
+        });
     }
 
     /**
@@ -173,6 +238,11 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
             }
         });
         
+        if(this.props.enableIngress) {
+            const ingress = this.createIngress(clusterInfo)
+            keptnHelmChart.node.addDependency(ingress)
+        }
+
         keptnapitoken.node.addDependency(namespace)
         brigecredentials.node.addDependency(namespace)
   
