@@ -20,7 +20,8 @@ type KeptnControlPlaneParams = {
     bridgePassword: string,
     namespace: string,
     helmrepo: string,
-    version: string
+    version: string,
+    enableLoadbalancer: boolean
 }
 
 const defaultKeptnControlPlaneParams: KeptnControlPlaneParams = {
@@ -29,7 +30,8 @@ const defaultKeptnControlPlaneParams: KeptnControlPlaneParams = {
     bridgePassword: "",
     namespace: "keptn",
     helmrepo: "https://storage.googleapis.com/keptn-installer",
-    version: "0.11.4"
+    version: "0.11.4",
+    enableLoadbalancer: false
 }
 
 export class KeptnControlPlaneAddOn implements ClusterAddOn {
@@ -149,13 +151,26 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         const keptnapitoken = this.createKeptnApiTokenSecret(clusterInfo);
         const brigecredentials = this.createBridgeCredentials(clusterInfo);
         
+        let ServiceType = 'ClusterIP'
+
+        if(this.props.enableLoadbalancer) {
+            ServiceType = 'LoadBalancer'
+        }        
+
         const keptnHelmChart = clusterInfo.cluster.addHelmChart("keptn", {
             chart: "keptn",
             repository: this.props.helmrepo,
             version: this.props.version,
             namespace: this.props.namespace,
             release: "keptn",
-            wait: true
+            wait: true,
+            values: {
+                'control-plane': {
+                    apiGatewayNginx: {
+                        type: ServiceType
+                    }
+                }
+            }
         });
         
         keptnapitoken.node.addDependency(namespace)
