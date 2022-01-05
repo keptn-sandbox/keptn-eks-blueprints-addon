@@ -2,7 +2,7 @@
 
 [![main](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml)
 
-The Keptn Add-On for the Amazon Shared Services Platform enables platform administrators to install a [keptn](keptn.sh) Control Plane during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
+The Keptn Add-On for the Amazon Shared Services Platform enables platform administrators to install a [keptn](keptn.sh) Control Plane (by default in version [0.11.4](https://keptn.sh/docs/news/release_announcements/keptn-0114/)) during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
 
 Therefore, this Add-On installs the [Keptn Helm Chart](https://github.com/keptn/keptn/tree/master/installer) and configures Keptn to use an API-Token and Bridge Password with credentials specified by variables or a Amazon Secrets Manager Secret.
 
