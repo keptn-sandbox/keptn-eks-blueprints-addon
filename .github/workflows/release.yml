@@ -1,14 +1,9 @@
-name: main
+name: Release
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    # this is checking periodically if there are any breaking API changes
-    # Every day at 00:00
-    - cron: '0 0 * * *'
+  release:
+    types:
+      - created
 
 jobs:
   build:
@@ -34,6 +29,15 @@ jobs:
       - run: npm run build --if-present
         working-directory: ./${{ matrix.addons }}
         name: Build
+
+      - run: npm version ${{ github.event.release.tag_name }}
+        working-directory: ./${{ matrix.addons }}
+        name: Update Version Number
+
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}   
+          package: ./${{ matrix.addons }}/package.json          
 
   trivy:
     needs: [build]
