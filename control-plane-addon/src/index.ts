@@ -111,6 +111,19 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
      * 
     */
     protected createIngress(clusterInfo: ClusterInfo): KubernetesManifest {
+
+        let tlsConfig = {}
+
+        if(this.props.ingressSecretName) {
+            tlsConfig = {                
+                    "hosts": [
+                        this.props.ingressHostname
+                    ],
+                    "secretName": this.props.ingressSecretName
+                }
+            
+        }
+
         return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-ingress-struct", {
             cluster: clusterInfo.cluster,
             manifest: [
@@ -124,13 +137,8 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                     },
                     "spec": {
                       "tls": [
-                        {
-                          "hosts": [
-                            this.props.ingressHostname
-                          ],
-                          "secretName": this.props.ingressSecretName
-                        }
-                      ],
+                          tlsConfig
+                        ],
                       "rules": [
                         {
                           "host": this.props.ingressHostname,
