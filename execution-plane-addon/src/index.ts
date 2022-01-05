@@ -78,7 +78,7 @@ export class KeptnExecutionPlaneAddOn implements ClusterAddOn {
             this.props.apiToken = credentials.API_TOKEN            
         }
 
-        return clusterInfo.cluster.addHelmChart("helm-service", {
+        return clusterInfo.cluster.addHelmChart("helm-service-" + this.props.namespace, {
             chart: this.props.chartName,
             repository: this.props.helmrepo,
             version: this.props.version,

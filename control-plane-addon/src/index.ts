@@ -167,7 +167,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
      * 
     */
     protected createNamespace(clusterInfo: ClusterInfo): KubernetesManifest {
-        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-namespace-struct", {
+        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-namespace-" + this.props.namespace + "-struct", {
             cluster: clusterInfo.cluster,
             manifest: [{
                 apiVersion: 'v1',
@@ -187,7 +187,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
      * @returns 
     */
     protected createKeptnApiTokenSecret(clusterInfo: ClusterInfo): KubernetesManifest {
-        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-api-token", {
+        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-api-token-" + this.props.namespace, {
             cluster: clusterInfo.cluster,
             manifest: [{
                 apiVersion: 'v1',
@@ -224,7 +224,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
      * @returns 
     */
     protected createBridgeCredentials(clusterInfo: ClusterInfo): KubernetesManifest {
-        return new KubernetesManifest(clusterInfo.cluster.stack, "bridge-credentials", {
+        return new KubernetesManifest(clusterInfo.cluster.stack, "bridge-credentials-" + this.props.namespace, {
             cluster: clusterInfo.cluster,
             manifest: [{
                 apiVersion: 'v1',
@@ -275,7 +275,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
             ServiceType = 'LoadBalancer'
         }        
 
-        const keptnHelmChart = clusterInfo.cluster.addHelmChart("keptn", {
+        const keptnHelmChart = clusterInfo.cluster.addHelmChart("keptn-" + this.props.namespace, {
             chart: "keptn",
             repository: this.props.helmrepo,
             version: this.props.version,
