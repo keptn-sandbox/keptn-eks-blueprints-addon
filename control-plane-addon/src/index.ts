@@ -218,7 +218,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                     }                    
                 },
                 data: {
-                    "keptn-api-token": this.props.apiToken,
+                    "keptn-api-token": btoa(this.props.apiToken),
                 }                    
             }],
             overwrite: true,
@@ -256,7 +256,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                 },
                 data: {
                     "BASIC_AUTH_USERNAME": 'a2VwdG4=',
-                    "BASIC_AUTH_PASSWORD": this.props.bridgePassword
+                    "BASIC_AUTH_PASSWORD": btoa(this.props.bridgePassword)
                 }                    
             }],
             overwrite: true,
@@ -269,8 +269,8 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         if (this.props.ssmSecretName != "") {
             const secretValue = await getSecretValue(this.props.ssmSecretName, clusterInfo.cluster.stack.region);
             const credentials: KeptnSecret = JSON.parse(secretValue)
-            this.props.apiToken = btoa(credentials.API_TOKEN)
-            this.props.bridgePassword = btoa(credentials.BRIDGE_PASSWORD)
+            this.props.apiToken = credentials.API_TOKEN
+            this.props.bridgePassword = credentials.BRIDGE_PASSWORD
         }
         
         const namespace = this.createNamespace(clusterInfo);
