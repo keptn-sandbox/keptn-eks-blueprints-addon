@@ -1,6 +1,6 @@
 import { ClusterAddOn, ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
-import { Construct, TreeInspector } from '@aws-cdk/core'
-import {getSecretValue, loadExternalYaml} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
+import { Construct } from '@aws-cdk/core'
+import {getSecretValue} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
 import { KubernetesManifest } from "@aws-cdk/aws-eks";
 
 /**
@@ -71,7 +71,9 @@ type KeptnControlPlaneParams = {
      *  "kubernetes.io/ingress.class": "nginx"
      * }
      */               
-    ingressAnnotations: Map<string, string>,
+    ingressAnnotations: {
+        [key: string]: unknown;
+    };
 
     /**
      * Configure an ingress secretName

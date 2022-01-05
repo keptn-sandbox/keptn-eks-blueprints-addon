@@ -1,6 +1,6 @@
 import { ClusterAddOn, ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
 import { Construct } from '@aws-cdk/core'
-import {getSecretValue, loadExternalYaml} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
+import {getSecretValue} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
 
 
 interface KeptnSecret {
