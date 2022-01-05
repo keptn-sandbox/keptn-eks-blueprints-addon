@@ -42,9 +42,9 @@ interface KeptnSecret {
     version: string,
 
     /**
-     * URL of your Keptn Control Plane
+     * Hostname of your Keptn Control Plane
      */     
-    controlPlaneUrl: string
+    controlPlaneHost: string
 
     /**
      * Name of the Execution Plane helm-chart
@@ -59,7 +59,7 @@ const defaultKeptnExecutionPlaneParams: KeptnExecutionPlaneParams = {
     namespace: "keptn",
     helmrepo: "https://storage.googleapis.com/keptn-installer",
     version: "0.11.4",
-    controlPlaneUrl: "",
+    controlPlaneHost: "",
     chartName: "helm-service"
 }
 
@@ -88,7 +88,7 @@ export class KeptnExecutionPlaneAddOn implements ClusterAddOn {
                     enabled: true,
                     api: {
                         token: this.props.apiToken,
-                        hostname: this.props.controlPlaneUrl
+                        hostname: this.props.controlPlaneHost
                     }
                 },
             }
