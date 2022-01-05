@@ -302,6 +302,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         if(this.props.enableIngress) {
             const ingress = this.createIngress(clusterInfo)
             keptnHelmChart.node.addDependency(ingress)
+            ingress.node.addDependency(namespace)
         }
 
         keptnapitoken.node.addDependency(namespace)
