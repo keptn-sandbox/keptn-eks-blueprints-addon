@@ -15,16 +15,68 @@ interface KeptnSecret {
 }
 
 type KeptnControlPlaneParams = {
+
+    /**
+     * The AWS Secrets Manager Secret which is containing the Keptn bridge password and API Token (keys: API_TOKEN, BRIDGE_PASSWORD)
+     */
     ssmSecretName: string,
+
+    /**
+     * Keptn API Token is used to connect to the Keptn API, not needed if a ssmSecretName is specified
+     */    
     apiToken: string,
+
+    /**
+     * Keptn Bridge Password is used to login to the Keptn bridge, not needed if a ssmSecretName is specified
+     */    
     bridgePassword: string,
+
+    /**
+     * Namespace where the keptn Control Plane will be deployed
+     * @default keptn
+     */
     namespace: string,
+
+    /**
+     * Helm Repository which will be used for installing Keptn
+     * @default https://storage.googleapis.com/keptn-installer
+     */    
     helmrepo: string,
+
+    /**
+     * The Version of Keptn which should get installed
+     * @default 0.11.4
+     */    
     version: string,
+
+    /**
+     * Expose Keptn's Bridge and API Gateway service as type Loadbalancer instead of ClusterIP
+     * @default false
+     */            
     enableLoadbalancer: boolean,
+
+    /**
+     * Create an Ingress object to Expose Keptn's Bridge and API Gateway
+     * @default false
+     */      
     enableIngress: boolean,
+
+    /**
+     * The Hostname for the Ingress object
+     */          
     ingressHostname: string,
+
+    /**
+     * Add additional Ingress Annotations like the ingress class
+     * ingressAnnotations: {
+     *  "kubernetes.io/ingress.class": "nginx"
+     * }
+     */               
     ingressAnnotations: {},
+
+    /**
+     * Configure an ingress secretName
+     */      
     ingressSecretName: string,
 }
 

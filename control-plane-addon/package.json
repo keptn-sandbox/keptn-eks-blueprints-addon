@@ -1,5 +1,5 @@
 {
-  "name": "@dynatraceoss/keptn-cp-ssp-addon",
+  "name": "@keptn/keptn-cp-ssp-addon",
   "version": "0.0.1",
   "description": "Keptn Control Plane Addon for AWS SSP CDK Platform",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thschue/keptn-ssp-addon.git"
+    "url": "git+https://github.com/keptn-sandbox/keptn-ssp-addon.git"
   },
   "author": "Thomas Schuetz <thomas.schuetz@dynatrace.com>",
   "license": "Apache-2.0",
