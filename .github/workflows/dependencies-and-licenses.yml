@@ -1,0 +1,40 @@
+name: Dependencies and Licenses
+on:
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+jobs:
+  generate-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Core Repo
+        uses: actions/checkout@v2.4.0
+        with:
+          path: 'keptn-sandbox/keptn-ssp-addons'
+      - name: Set up Node
+        uses: actions/setup-node@v2.5.0
+        with:
+          node-version: 14
+      - name: Install npm libs
+        run: |
+          yarn global add license-report
+      - name: Node dependencies and licenses - Execution Plane Add-On
+        run: |
+          echo "🔍 Analyzing dependencies in keptn-ep-add-on"
+          ( cd keptn-sandbox/keptn-ssp-addons/execution-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-ep-addon.txt )
+          echo
+          echo "👍 done. written results to ./dependencies-and-licenses-ep-addon.txt"
+          cat dependencies-and-licenses-ep-add-on.txt.txt
+      - name: Node dependencies and licenses - Control Plane Add-On
+        run: |
+          echo "🔍 Analyzing dependencies in keptn-cp-add-on"
+          ( cd keptn-sandbox/keptn-ssp-addons/control-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-cp-addon.txt )
+          echo
+          echo "👍 done. written results to ./dependencies-and-licenses-cp-addon.txt"
+          cat dependencies-and-licenses-cp-add-on.txt.txt
+      - name: Upload dependencies and licenses artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dependencies-and-licenses
+          path: dependencies-and-licenses-*.txt

@@ -1,0 +1,52 @@
+name: main
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # this is checking periodically if there are any breaking API changes
+    # Every day at 00:00
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+        addons: ["control-plane-addon","execution-plane-addon"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build on Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci --ignore-scripts
+        working-directory: ./addon
+
+      - run: npm run lint
+        working-directory: ./${{ matrix.addons }}
+        name: Lint
+
+      - run: npm run build --if-present
+        working-directory: ./${{ matrix.addons }}
+        name: Build
+
+  trivy:
+    needs: [build]
+    name: Trivy Scan
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+          scan-ref: ./${{ matrix.addons }}
