@@ -37,7 +37,8 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}   
-          package: ./${{ matrix.addons }}/package.json          
+          package: ./${{ matrix.addons }}/package.json
+          access: public    
 
   trivy:
     needs: [build]
