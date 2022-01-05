@@ -124,7 +124,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
             
         }
 
-        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-ingress-struct", {
+        return new KubernetesManifest(clusterInfo.cluster.stack, "keptn-ingress-" + this.props.namespace + "-struct", {
             cluster: clusterInfo.cluster,
             manifest: [
                 {
