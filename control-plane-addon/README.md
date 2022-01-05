@@ -1,6 +1,6 @@
 # Keptn Control Plane Add-On for the Amazon Shared Services Platform
 
-[![main](https://github.com/keptn-sandbox/keptn-ssp-addon/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-ssp-addon/actions/workflows/main.yml)
+[![main](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml)
 
 The Keptn Add-On for the Amazon Shared Services Platform enables platform administrators to install a [keptn](keptn.sh) Control Plane during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
 
