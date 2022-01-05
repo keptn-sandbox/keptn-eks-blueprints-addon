@@ -86,7 +86,7 @@ jobs:
           echo "👍 done. written results to ./dependencies-and-licenses-cp-addon.txt"
           cat dependencies-and-licenses-cp-add-on.txt
       - name: Upload Release Asset - Control Plane Add-On SBOM
-        id: upload-release-asset
+        id: upload-release-asset-cp
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -96,7 +96,7 @@ jobs:
           asset_name: dependencies-and-licenses-control-plane.txt
           asset_content_type: text/plain
       - name: Upload Release Asset - Execution Plane Add-On SBOM
-        id: upload-release-asset
+        id: upload-release-asset-ep
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
