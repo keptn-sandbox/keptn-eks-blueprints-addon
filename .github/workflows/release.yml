@@ -77,14 +77,14 @@ jobs:
           ( cd keptn-sandbox/keptn-ssp-addons/execution-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-ep-addon.txt )
           echo
           echo "👍 done. written results to ./dependencies-and-licenses-ep-addon.txt"
-          cat dependencies-and-licenses-ep-add-on.txt
+          cat dependencies-and-licenses-ep-addon.txt
       - name: Node dependencies and licenses - Control Plane Add-On
         run: |
           echo "🔍 Analyzing dependencies in keptn-cp-add-on"
           ( cd keptn-sandbox/keptn-ssp-addons/control-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-cp-addon.txt )
           echo
           echo "👍 done. written results to ./dependencies-and-licenses-cp-addon.txt"
-          cat dependencies-and-licenses-cp-add-on.txt
+          cat dependencies-and-licenses-cp-addon.txt
       - name: Upload Release Asset - Control Plane Add-On SBOM
         id: upload-release-asset-cp
         uses: actions/upload-release-asset@v1
@@ -92,7 +92,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./dependencies-and-licenses-cp-add-on.txt
+          asset_path: ./dependencies-and-licenses-cp-addon.txt
           asset_name: dependencies-and-licenses-control-plane.txt
           asset_content_type: text/plain
       - name: Upload Release Asset - Execution Plane Add-On SBOM
