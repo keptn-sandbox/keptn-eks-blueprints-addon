@@ -2,7 +2,6 @@ import { ClusterAddOn, ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
 import { Construct, TreeInspector } from '@aws-cdk/core'
 import {getSecretValue, loadExternalYaml} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
 import { KubernetesManifest } from "@aws-cdk/aws-eks";
-import { type } from 'os';
 
 /**
  * Configuration options for the add-on.

@@ -5,7 +5,6 @@ import {getSecretValue, loadExternalYaml} from "@aws-quickstart/ssp-amazon-eks/d
 
 interface KeptnSecret {
     API_TOKEN: string;
-    BRIDGE_PASSWORD: string;    
 }
 
 /**

@@ -1,6 +1,6 @@
 {
   "name": "@keptn/keptn-cp-ssp-addon",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Keptn Control Plane Addon for AWS SSP CDK Platform",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/keptn-sandbox/keptn-ssp-addon.git"
   },
-  "author": "Thomas Schuetz <thomas.schuetz@dynatrace.com>",
+  "author": "Christian Heckelmann <christian.heckelmann@dynatrace.com>",
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.10",
