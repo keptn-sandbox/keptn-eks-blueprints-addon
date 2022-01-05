@@ -218,7 +218,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                     }                    
                 },
                 data: {
-                    "keptn-api-token": this.props.apiToken,
+                    "keptn-api-token": btoa(this.props.apiToken),
                 }                    
             }],
             overwrite: true,
@@ -256,7 +256,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                 },
                 data: {
                     "BASIC_AUTH_USERNAME": 'a2VwdG4=',
-                    "BASIC_AUTH_PASSWORD": this.props.bridgePassword
+                    "BASIC_AUTH_PASSWORD": btoa(this.props.bridgePassword)
                 }                    
             }],
             overwrite: true,
@@ -269,13 +269,13 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         if (this.props.ssmSecretName != "") {
             const secretValue = await getSecretValue(this.props.ssmSecretName, clusterInfo.cluster.stack.region);
             const credentials: KeptnSecret = JSON.parse(secretValue)
-            this.props.apiToken = btoa(credentials.API_TOKEN)
-            this.props.bridgePassword = btoa(credentials.BRIDGE_PASSWORD)
+            this.props.apiToken = credentials.API_TOKEN
+            this.props.bridgePassword = credentials.BRIDGE_PASSWORD
         }
         
         const namespace = this.createNamespace(clusterInfo);
         const keptnapitoken = this.createKeptnApiTokenSecret(clusterInfo);
-        const brigecredentials = this.createBridgeCredentials(clusterInfo);
+        const bridgecredentials = this.createBridgeCredentials(clusterInfo);
         
         let ServiceType = 'ClusterIP'
 
@@ -306,10 +306,10 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         }
 
         keptnapitoken.node.addDependency(namespace)
-        brigecredentials.node.addDependency(namespace)
+        bridgecredentials.node.addDependency(namespace)
   
         keptnHelmChart.node.addDependency(keptnapitoken)
-        keptnHelmChart.node.addDependency(brigecredentials)
+        keptnHelmChart.node.addDependency(bridgecredentials)
 
         return keptnHelmChart
     }
