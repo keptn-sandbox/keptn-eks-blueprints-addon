@@ -275,7 +275,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         
         const namespace = this.createNamespace(clusterInfo);
         const keptnapitoken = this.createKeptnApiTokenSecret(clusterInfo);
-        const brigecredentials = this.createBridgeCredentials(clusterInfo);
+        const bridgecredentials = this.createBridgeCredentials(clusterInfo);
         
         let ServiceType = 'ClusterIP'
 
@@ -306,10 +306,10 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         }
 
         keptnapitoken.node.addDependency(namespace)
-        brigecredentials.node.addDependency(namespace)
+        bridgecredentials.node.addDependency(namespace)
   
         keptnHelmChart.node.addDependency(keptnapitoken)
-        keptnHelmChart.node.addDependency(brigecredentials)
+        keptnHelmChart.node.addDependency(bridgecredentials)
 
         return keptnHelmChart
     }
