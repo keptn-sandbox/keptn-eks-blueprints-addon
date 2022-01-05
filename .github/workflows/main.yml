@@ -34,10 +34,11 @@ jobs:
       - run: npm run build --if-present
         working-directory: ./${{ matrix.addons }}
         name: Build
-        
+
       - uses: JS-DevTools/npm-publish@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }}        
+          token: ${{ secrets.NPM_TOKEN }}   
+          package: ./${{ matrix.addons }}/package.json
 
   trivy:
     needs: [build]
