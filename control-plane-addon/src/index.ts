@@ -71,7 +71,7 @@ type KeptnControlPlaneParams = {
      *  "kubernetes.io/ingress.class": "nginx"
      * }
      */               
-    ingressAnnotations: {},
+    ingressAnnotations: Map<string, string>,
 
     /**
      * Configure an ingress secretName
