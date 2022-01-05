@@ -1,0 +1,10 @@
+/addon/node_modules/
+/addon/dist/
+cdk.out/
+cdk.context.json
+package-lock.json
+
+*.js
+!_*.js
+*.d.ts
+/node_modules/

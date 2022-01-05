@@ -1,14 +1,21 @@
-# Welcome to your CDK TypeScript project!
+# Keptn Control Plane Basic Example
 
-This is a blank project for TypeScript development with CDK.
+Please adjust the settings in [bin/basic-example.ts](bin/basic-examples.ts)
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+```typescript
+apiToken: '<your-api-token>',
+bridgePassword: '<your-bridge-password>'
+const account = '<your-account-id>';
+const region = '<region>';
+```
 
-## Useful commands
+Run the following commands to deploy the stack
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+```bash
+npm install
+cdk bootstrap
+cdk deploy
+kubectl -n keptn port-forward service/api-gateway-nginx 8080:80
+```
+
+You can not access the Keptn's bridge with the username `keptn` and the password you have defined via [http://localhost:8080](http://localhost:8080).
