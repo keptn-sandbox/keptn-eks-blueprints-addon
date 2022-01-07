@@ -19,40 +19,40 @@ interface KeptnControlPlaneAddOnProps extends HelmAddOnUserProps {
     /**
      * The AWS Secrets Manager Secret which is containing the Keptn bridge password and API Token (keys: API_TOKEN, BRIDGE_PASSWORD)
      */
-    ssmSecretName: string,
+    ssmSecretName?: string,
 
     /**
      * Keptn API Token is used to connect to the Keptn API, not needed if a ssmSecretName is specified
      */    
-    apiToken: string,
+    apiToken?: string,
 
     /**
      * Keptn Bridge Password is used to login to the Keptn bridge, not needed if a ssmSecretName is specified
      */    
-    bridgePassword: string,
+    bridgePassword?: string,
 
     /**
      * The Version of Keptn which should get installed
      * @default 0.11.4
      */    
-    version: string,
+    version?: string,
 
     /**
      * Expose Keptn's Bridge and API Gateway service as type Loadbalancer instead of ClusterIP
      * @default false
      */            
-    enableLoadbalancer: boolean,
+    enableLoadbalancer?: boolean,
 
     /**
      * Create an Ingress object to Expose Keptn's Bridge and API Gateway
      * @default false
      */      
-    enableIngress: boolean,
+    enableIngress?: boolean,
 
     /**
      * The Hostname for the Ingress object
      */          
-    ingressHostname: string,
+    ingressHostname?: string,
 
     /**
      * Add additional Ingress Annotations like the ingress class
@@ -60,14 +60,14 @@ interface KeptnControlPlaneAddOnProps extends HelmAddOnUserProps {
      *  "kubernetes.io/ingress.class": "nginx"
      * }
      */               
-    ingressAnnotations: {
+    ingressAnnotations?: {
         [key: string]: unknown;
     };
 
     /**
      * Configure an ingress secretName
      */      
-    ingressSecretName: string,
+    ingressSecretName?: string,
 }
 
 export const defaultProps: HelmAddOnProps & KeptnControlPlaneAddOnProps = {
@@ -75,7 +75,7 @@ export const defaultProps: HelmAddOnProps & KeptnControlPlaneAddOnProps = {
     namespace: "keptn",
     repository: "https://storage.googleapis.com/keptn-installer",
     version: "0.11.4",
-    release: "ssp-addon-keptn-cp",
+    release: "keptn",
     chart: "keptn",
     ssmSecretName: "",
     apiToken: "",
@@ -211,7 +211,7 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
                     }                    
                 },
                 data: {
-                    "keptn-api-token": btoa(this.options.apiToken),
+                    "keptn-api-token": btoa(<string>this.options.apiToken),
                 }                    
             }],
             overwrite: true,
@@ -249,7 +249,7 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
                 },
                 data: {
                     "BASIC_AUTH_USERNAME": 'a2VwdG4=',
-                    "BASIC_AUTH_PASSWORD": btoa(this.options.bridgePassword)
+                    "BASIC_AUTH_PASSWORD": btoa(<string>this.options.bridgePassword)
                 }                    
             }],
             overwrite: true,
@@ -260,7 +260,7 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
     async deploy(clusterInfo: ClusterInfo): Promise<Construct> {       
                 
         if (this.options.ssmSecretName != "") {
-            const secretValue = await getSecretValue(this.options.ssmSecretName, clusterInfo.cluster.stack.region);
+            const secretValue = await getSecretValue(<string>this.options.ssmSecretName, clusterInfo.cluster.stack.region);
             const credentials: KeptnSecret = JSON.parse(secretValue)
             this.options.apiToken = credentials.API_TOKEN
             this.options.bridgePassword = credentials.BRIDGE_PASSWORD

@@ -17,17 +17,17 @@ interface KeptnSecret {
     /**
      * The AWS Secrets Manager Secret which is containing the Keptn bridge password and API Token (keys: API_TOKEN, BRIDGE_PASSWORD)
      */
-    ssmSecretName: string,
+    ssmSecretName?: string,
 
     /**
      * Keptn API Token is used to connect the Execution Plane to Keptn, not needed if a ssmSecretName is specified
      */      
-    apiToken: string,
+    apiToken?: string,
 
     /**
      * Hostname of your Keptn Control Plane
      */     
-    controlPlaneHost: string
+    controlPlaneHost?: string
 }
 
 export const defaultProps: HelmAddOnProps & KeptnExecutionPlaneProps = {
@@ -60,7 +60,7 @@ export class KeptnExecutionPlaneAddOn extends HelmAddOn {
     async deploy(clusterInfo: ClusterInfo): Promise<Construct> {
 
         if (this.options.ssmSecretName != "") {
-            const secretValue = await getSecretValue(this.options.ssmSecretName, clusterInfo.cluster.stack.region);
+            const secretValue = await getSecretValue(<string>this.options.ssmSecretName, clusterInfo.cluster.stack.region);
             const credentials: KeptnSecret = JSON.parse(secretValue)
             this.options.apiToken = credentials.API_TOKEN
         }
