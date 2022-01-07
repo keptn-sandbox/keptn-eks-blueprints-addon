@@ -1,6 +1,7 @@
-import { ClusterAddOn, ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
+import { ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
+import { HelmAddOn, HelmAddOnProps, HelmAddOnUserProps } from "@aws-quickstart/ssp-amazon-eks/dist/addons/helm-addon";
 import { Construct } from '@aws-cdk/core'
-import {getSecretValue} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
+import { getSecretValue } from "@aws-quickstart/ssp-amazon-eks/dist/utils";
 import { KubernetesManifest } from "@aws-cdk/aws-eks";
 
 /**
@@ -13,57 +14,45 @@ interface KeptnSecret {
     BRIDGE_PASSWORD: string;    
 }
 
-type KeptnControlPlaneParams = {
+interface KeptnControlPlaneAddOnProps extends HelmAddOnUserProps {
 
     /**
      * The AWS Secrets Manager Secret which is containing the Keptn bridge password and API Token (keys: API_TOKEN, BRIDGE_PASSWORD)
      */
-    ssmSecretName: string,
+    ssmSecretName?: string,
 
     /**
      * Keptn API Token is used to connect to the Keptn API, not needed if a ssmSecretName is specified
      */    
-    apiToken: string,
+    apiToken?: string,
 
     /**
      * Keptn Bridge Password is used to login to the Keptn bridge, not needed if a ssmSecretName is specified
      */    
-    bridgePassword: string,
-
-    /**
-     * Namespace where the keptn Control Plane will be deployed
-     * @default keptn
-     */
-    namespace: string,
-
-    /**
-     * Helm Repository which will be used for installing Keptn
-     * @default https://storage.googleapis.com/keptn-installer
-     */    
-    helmrepo: string,
+    bridgePassword?: string,
 
     /**
      * The Version of Keptn which should get installed
      * @default 0.11.4
      */    
-    version: string,
+    version?: string,
 
     /**
      * Expose Keptn's Bridge and API Gateway service as type Loadbalancer instead of ClusterIP
      * @default false
      */            
-    enableLoadbalancer: boolean,
+    enableLoadbalancer?: boolean,
 
     /**
      * Create an Ingress object to Expose Keptn's Bridge and API Gateway
      * @default false
      */      
-    enableIngress: boolean,
+    enableIngress?: boolean,
 
     /**
      * The Hostname for the Ingress object
      */          
-    ingressHostname: string,
+    ingressHostname?: string,
 
     /**
      * Add additional Ingress Annotations like the ingress class
@@ -71,36 +60,40 @@ type KeptnControlPlaneParams = {
      *  "kubernetes.io/ingress.class": "nginx"
      * }
      */               
-    ingressAnnotations: {
+    ingressAnnotations?: {
         [key: string]: unknown;
     };
 
     /**
      * Configure an ingress secretName
      */      
-    ingressSecretName: string,
+    ingressSecretName?: string,
 }
 
-const defaultKeptnControlPlaneParams: KeptnControlPlaneParams = {
+export const defaultProps: HelmAddOnProps & KeptnControlPlaneAddOnProps = {
+    name: 'keptn',
+    namespace: "keptn",
+    repository: "https://storage.googleapis.com/keptn-installer",
+    version: "0.11.4",
+    release: "keptn",
+    chart: "keptn",
     ssmSecretName: "",
     apiToken: "",
     bridgePassword: "",
-    namespace: "keptn",
-    helmrepo: "https://storage.googleapis.com/keptn-installer",
-    version: "0.11.4",
     enableLoadbalancer: false,
     enableIngress: false,
     ingressHostname: "",
     ingressAnnotations: {},
-    ingressSecretName: "",
+    ingressSecretName: ""
 }
 
-export class KeptnControlPlaneAddOn implements ClusterAddOn {
+export class KeptnControlPlaneAddOn extends HelmAddOn {
 
-    props: KeptnControlPlaneParams
+   readonly options: KeptnControlPlaneAddOnProps
 
-    constructor(params: Partial<KeptnControlPlaneParams>) {        
-        this.props = {...defaultKeptnControlPlaneParams, ...params}
+    constructor(props: KeptnControlPlaneAddOnProps) {
+       super({...defaultProps, ...props})
+       this.options = this.props as KeptnControlPlaneAddOnProps
     }
 
     /**
@@ -114,12 +107,12 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
 
         let tlsConfig = {}
 
-        if(this.props.ingressSecretName) {
+        if(this.options.ingressSecretName) {
             tlsConfig = {                
                     "hosts": [
-                        this.props.ingressHostname
+                        this.options.ingressHostname
                     ],
-                    "secretName": this.props.ingressSecretName
+                    "secretName": this.options.ingressSecretName
                 }
             
         }
@@ -132,8 +125,8 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                     "kind": "Ingress",
                     "metadata": {
                       "name": "keptn-ingress",
-                      "namespace": this.props.namespace,
-                      "annotations": this.props.ingressAnnotations,
+                      "namespace": this.options.namespace,
+                      "annotations": this.options.ingressAnnotations,
                     },
                     "spec": {
                       "tls": [
@@ -141,7 +134,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                         ],
                       "rules": [
                         {
-                          "host": this.props.ingressHostname,
+                          "host": this.options.ingressHostname,
                           "http": {
                             "paths": [
                               {
@@ -218,7 +211,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                     }                    
                 },
                 data: {
-                    "keptn-api-token": btoa(this.props.apiToken),
+                    "keptn-api-token": btoa(<string>this.options.apiToken),
                 }                    
             }],
             overwrite: true,
@@ -256,7 +249,7 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
                 },
                 data: {
                     "BASIC_AUTH_USERNAME": 'a2VwdG4=',
-                    "BASIC_AUTH_PASSWORD": btoa(this.props.bridgePassword)
+                    "BASIC_AUTH_PASSWORD": btoa(<string>this.options.bridgePassword)
                 }                    
             }],
             overwrite: true,
@@ -266,11 +259,11 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
 
     async deploy(clusterInfo: ClusterInfo): Promise<Construct> {       
                 
-        if (this.props.ssmSecretName != "") {
-            const secretValue = await getSecretValue(this.props.ssmSecretName, clusterInfo.cluster.stack.region);
+        if (this.options.ssmSecretName != "") {
+            const secretValue = await getSecretValue(<string>this.options.ssmSecretName, clusterInfo.cluster.stack.region);
             const credentials: KeptnSecret = JSON.parse(secretValue)
-            this.props.apiToken = credentials.API_TOKEN
-            this.props.bridgePassword = credentials.BRIDGE_PASSWORD
+            this.options.apiToken = credentials.API_TOKEN
+            this.options.bridgePassword = credentials.BRIDGE_PASSWORD
         }
         
         const namespace = this.createNamespace(clusterInfo);
@@ -279,27 +272,19 @@ export class KeptnControlPlaneAddOn implements ClusterAddOn {
         
         let ServiceType = 'ClusterIP'
 
-        if(this.props.enableLoadbalancer) {
+        if(this.options.enableLoadbalancer) {
             ServiceType = 'LoadBalancer'
         }        
 
-        const keptnHelmChart = clusterInfo.cluster.addHelmChart("keptn-" + this.props.namespace, {
-            chart: "keptn",
-            repository: this.props.helmrepo,
-            version: this.props.version,
-            namespace: this.props.namespace,
-            release: "keptn",
-            wait: true,
-            values: {
-                'control-plane': {
-                    apiGatewayNginx: {
-                        type: ServiceType
-                    }
+        const keptnHelmChart = this.addHelmChart(clusterInfo, {
+            'control-plane': {
+                apiGatewayNginx: {
+                    type: ServiceType
                 }
             }
         });
         
-        if(this.props.enableIngress) {
+        if(this.options.enableIngress) {
             const ingress = this.createIngress(clusterInfo)
             keptnHelmChart.node.addDependency(ingress)
             ingress.node.addDependency(namespace)

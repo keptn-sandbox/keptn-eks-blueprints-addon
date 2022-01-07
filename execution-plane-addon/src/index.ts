@@ -1,6 +1,7 @@
-import { ClusterAddOn, ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
+import { ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
 import { Construct } from '@aws-cdk/core'
 import {getSecretValue} from "@aws-quickstart/ssp-amazon-eks/dist/utils";
+import {HelmAddOn, HelmAddOnProps, HelmAddOnUserProps} from "@aws-quickstart/ssp-amazon-eks/dist/addons/helm-addon";
 
 
 interface KeptnSecret {
@@ -11,87 +12,67 @@ interface KeptnSecret {
  * Configuration options for the add-on.
  */
 
- type KeptnExecutionPlaneParams = {
+ interface KeptnExecutionPlaneProps extends HelmAddOnUserProps {
 
     /**
      * The AWS Secrets Manager Secret which is containing the Keptn bridge password and API Token (keys: API_TOKEN, BRIDGE_PASSWORD)
      */
-    ssmSecretName: string,
+    ssmSecretName?: string,
 
     /**
      * Keptn API Token is used to connect the Execution Plane to Keptn, not needed if a ssmSecretName is specified
      */      
-    apiToken: string,
-
-    /**
-     * Namespace where the keptn Control Plane will be deployed
-     * @default keptn
-     */    
-    namespace: string,
-
-    /**
-     * Helm Repository which will be used for installing Keptn
-     * @default https://storage.googleapis.com/keptn-installer
-     */        
-    helmrepo: string,
-
-    /**
-     * The Version of Keptn which should get installed
-     * @default 0.11.4
-     */     
-    version: string,
+    apiToken?: string,
 
     /**
      * Hostname of your Keptn Control Plane
      */     
-    controlPlaneHost: string
-
-    /**
-     * Name of the Execution Plane helm-chart
-     * @default helm-service
-     */     
-    chartName: string    
+    controlPlaneHost?: string
 }
 
-const defaultKeptnExecutionPlaneParams: KeptnExecutionPlaneParams = {    
+export const defaultProps: HelmAddOnProps & KeptnExecutionPlaneProps = {
+    name: "",
+    release: "",
     ssmSecretName: "",
-    apiToken: "",    
+    apiToken: "",
     namespace: "keptn",
-    helmrepo: "https://storage.googleapis.com/keptn-installer",
+    repository: "https://storage.googleapis.com/keptn-installer",
     version: "0.11.4",
     controlPlaneHost: "",
-    chartName: "helm-service"
+    chart: "helm-service"
 }
 
-export class KeptnExecutionPlaneAddOn implements ClusterAddOn {
-    props: KeptnExecutionPlaneParams
+export class KeptnExecutionPlaneAddOn extends HelmAddOn {
+    readonly options: KeptnExecutionPlaneProps
 
-    constructor(params: Partial<KeptnExecutionPlaneParams>) {
-        this.props = {...defaultKeptnExecutionPlaneParams, ...params}
+    constructor(props: KeptnExecutionPlaneProps) {
+        super({...defaultProps, ...props})
+        this.options = this.props as KeptnExecutionPlaneProps
+
+        if (! this.props.name) {
+            this.props.name = this.props.chart
+        }
+        if (! this.props.release) {
+            this.props.release = "ssm-addon-" + this.props.name
+        }
     }
 
     async deploy(clusterInfo: ClusterInfo): Promise<Construct> {
 
-        if (this.props.ssmSecretName != "") {
-            const secretValue = await getSecretValue(this.props.ssmSecretName, clusterInfo.cluster.stack.region);
+        if (this.options.ssmSecretName != "") {
+            const secretValue = await getSecretValue(<string>this.options.ssmSecretName, clusterInfo.cluster.stack.region);
             const credentials: KeptnSecret = JSON.parse(secretValue)
-            this.props.apiToken = credentials.API_TOKEN            
+            this.options.apiToken = credentials.API_TOKEN
         }
 
-        return clusterInfo.cluster.addHelmChart("helm-service-" + this.props.namespace, {
-            chart: this.props.chartName,
-            repository: this.props.helmrepo,
-            version: this.props.version,
-            namespace: this.props.namespace,
-            values: {
-                remoteControlPlane: {
-                    enabled: true,
-                    api: {
-                        token: this.props.apiToken,
-                        hostname: this.props.controlPlaneHost
-                    }
-                },
-            }
+        return this.addHelmChart(clusterInfo, {
+            remoteControlPlane: {
+                enabled: true,
+                api: {
+                    token: this.options.apiToken,
+                    hostname: this.options.controlPlaneHost
+                }
+            },
         });
     }
 }
