@@ -211,7 +211,7 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
                     }                    
                 },
                 data: {
-                    "keptn-api-token": btoa(<string>this.options.apiToken),
+                    "keptn-api-token": Buffer.from(<string>this.options.apiToken).toString('base64'),
                 }                    
             }],
             overwrite: true,
@@ -249,7 +249,7 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
                 },
                 data: {
                     "BASIC_AUTH_USERNAME": 'a2VwdG4=',
-                    "BASIC_AUTH_PASSWORD": btoa(<string>this.options.bridgePassword)
+                    "BASIC_AUTH_PASSWORD": Buffer.from(<string>this.options.bridgePassword).toString('base64')
                 }                    
             }],
             overwrite: true,
