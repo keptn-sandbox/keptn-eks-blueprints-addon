@@ -1,6 +1,6 @@
 {
   "name": "@keptn/keptn-cp-ssp-addon",
-  "version": "0.0.2",
+  "version": "SET_IN_CI",
   "description": "Keptn Control Plane Addon for AWS SSP CDK Platform",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.135.0",
+    "@aws-cdk/core": "^1.135.0",
     "@aws-quickstart/ssp-amazon-eks": "^0.12.4",
     "@types/async": "3.2.7"
   }
