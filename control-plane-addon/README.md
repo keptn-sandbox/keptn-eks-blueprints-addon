@@ -1,8 +1,8 @@
-# Keptn Control Plane Add-On for the Amazon Shared Services Platform
+# Keptn Control Plane Add-On for the Amazon EKS Blueprints
 
-[![main](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml)
+[![main](https://github.com/keptn-sandbox/keptn-eks-blueprints-addon/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-eks-blueprints-addon/actions/workflows/main.yml)
 
-The Keptn Add-On for the Amazon Shared Services Platform enables platform administrators to install a [keptn](keptn.sh) Control Plane (by default in version [0.11.4](https://keptn.sh/docs/news/release_announcements/keptn-0114/)) during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
+The Keptn Add-On for the Amazon EKS Blueprints enables platform administrators to install a [keptn](keptn.sh) Control Plane (by default in version [0.13.4](https://keptn.sh/docs/news/release_announcements/keptn-0134/)) during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
 
 Therefore, this Add-On installs the [Keptn Helm Chart](https://github.com/keptn/keptn/tree/master/installer) and configures Keptn to use an API-Token and Bridge Password with credentials specified by variables or a Amazon Secrets Manager Secret.
 
@@ -22,58 +22,74 @@ Therefore:
 ## Usage
 The Add-On can be used by either specifying the name of a Secrets Manager secret or the API Token and Bridge password.
 
-You can find informations how to get started with SSP Projects [here](https://aws-quickstart.github.io/ssp-amazon-eks/getting-started/). 
+You can find informations how to get started with EKS Blueprints Projects [here](https://aws-quickstart.github.io/cdk-eks-blueprints/getting-started/). 
 
 
 Example Configuration (secrets in Secrets Manager):
 
 ```typescript
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core'
-import * as keptncp from '@keptn/keptn-cp-ssp-addon'
-import * as ssp from '@aws-quickstart/ssp-amazon-eks'
+import * as cdk from 'aws-cdk-lib';
+import * as blueprints from '@aws-quickstart/eks-blueprints';
+import { KeptnControlPlaneAddOn } from '@keptn/keptn-controlplane-eks-blueprints-addon' 
 
 const app = new cdk.App();
+const account = '<AWS ACCOUNT ID>';
+const region = '<AWS REGION>';
 
-const KeptnControlPlane = new keptncp.KeptnControlPlaneAddOn({
-    ssmSecretName: 'keptn-secrets'
+
+const KeptnControlPlane = new KeptnControlPlaneAddOn({
+    ssmSecretName: 'keptn-ssp',
 })
-
-
-const addOns: Array<ssp.ClusterAddOn> = [
-    KeptnControlPlane,
-];
-
-const account = '<aws-account-id>';
-const region = '<aws-region>';
-const props = { env: { account, region } };
-new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
+ 
+blueprints.EksBlueprint.builder()
+    .account(account)
+    .region(region)
+    .addOns(new blueprints.addons.CalicoAddOn)
+    .addOns(new blueprints.addons.MetricsServerAddOn,)
+    .addOns(new blueprints.addons.ClusterAutoScalerAddOn)
+    .addOns(new blueprints.addons.ContainerInsightsAddOn)
+    .addOns(new blueprints.addons.AwsLoadBalancerControllerAddOn())
+    .addOns(new blueprints.addons.VpcCniAddOn())
+    .addOns(new blueprints.addons.CoreDnsAddOn())
+    .addOns(new blueprints.addons.KubeProxyAddOn())
+    .addOns(new blueprints.addons.XrayAddOn())
+    .addOns(KeptnControlPlane)
+    .build(app, 'eks-blueprint');
 ```
 
 ### Example Configuration (secrets in code):
 
 ```typescript
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core'
-import * as keptncp from '@keptn/keptn-cp-ssp-addon'
-import * as ssp from '@aws-quickstart/ssp-amazon-eks'
+import * as cdk from 'aws-cdk-lib';
+import * as blueprints from '@aws-quickstart/eks-blueprints';
+import { KeptnControlPlaneAddOn } from '@keptn/keptn-controlplane-eks-blueprints-addon' 
 
 const app = new cdk.App();
+const account = '<AWS ACCOUNT ID>';
+const region = '<AWS REGION>';
 
-const KeptnControlPlane = new keptncp.KeptnControlPlaneAddOn({
+
+const KeptnControlPlane = new KeptnControlPlaneAddOn({
     apiToken: '<your-api-token>',
     bridgePassword: '<your-bridge-password>'
 })
-
-
-const addOns: Array<ssp.ClusterAddOn> = [
-    KeptnControlPlane,
-];
-
-const account = '<aws-account-id>';
-const region = '<aws-region>';
-const props = { env: { account, region } };
-new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
+ 
+blueprints.EksBlueprint.builder()
+    .account(account)
+    .region(region)
+    .addOns(new blueprints.addons.CalicoAddOn)
+    .addOns(new blueprints.addons.MetricsServerAddOn,)
+    .addOns(new blueprints.addons.ClusterAutoScalerAddOn)
+    .addOns(new blueprints.addons.ContainerInsightsAddOn)
+    .addOns(new blueprints.addons.AwsLoadBalancerControllerAddOn())
+    .addOns(new blueprints.addons.VpcCniAddOn())
+    .addOns(new blueprints.addons.CoreDnsAddOn())
+    .addOns(new blueprints.addons.KubeProxyAddOn())
+    .addOns(new blueprints.addons.XrayAddOn())
+    .addOns(KeptnControlPlane)
+    .build(app, 'eks-blueprint');
 ```
 
 ## Add-On Options
@@ -97,14 +113,7 @@ new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
 ### Example Configuration (create Ingress):
 
 ```typescript
-import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core'
-import * as keptncp from '@keptn/keptn-cp-ssp-addon'
-import * as ssp from '@aws-quickstart/ssp-amazon-eks'
-
-const app = new cdk.App();
-
-const KeptnControlPlane = new keptncp.KeptnControlPlaneAddOn({
+const KeptnControlPlane = new KeptnControlPlaneAddOn({
     ssmSecretName: 'keptn-secrets',
     enableIngress: true,
     ingressHostname: 'mykeptn.yourdomain.com',
@@ -113,42 +122,15 @@ const KeptnControlPlane = new keptncp.KeptnControlPlaneAddOn({
     },
     ingressSecretName: 'mytlssecret'
 })
-
-
-const addOns: Array<ssp.ClusterAddOn> = [
-    KeptnControlPlane,
-];
-
-const account = '<aws-account-id>';
-const region = '<aws-region>';
-const props = { env: { account, region } };
-new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
 ```
 
 ### Example Configuration (expose Bridge via Loadbalancer):
 
 ```typescript
-import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core'
-import * as keptncp from '@keptn/keptn-cp-ssp-addon'
-import * as ssp from '@aws-quickstart/ssp-amazon-eks'
-
-const app = new cdk.App();
-
-const KeptnControlPlane = new keptncp.KeptnControlPlaneAddOn({
+const KeptnControlPlane = new KeptnControlPlaneAddOn({
     ssmSecretName: 'keptn-secrets',
     enableLoadbalancer: true
 })
-
-
-const addOns: Array<ssp.ClusterAddOn> = [
-    KeptnControlPlane,
-];
-
-const account = '<aws-account-id>';
-const region = '<aws-region>';
-const props = { env: { account, region } };
-new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
 ```
 
 ## Enhancements / Bugs 
