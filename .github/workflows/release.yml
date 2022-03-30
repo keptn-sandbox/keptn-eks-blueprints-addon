@@ -26,7 +26,7 @@ jobs:
         working-directory: ./${{ matrix.addons }}
         name: Lint
 
-      - run: npm run build --if-present
+      - run: make build
         working-directory: ./${{ matrix.addons }}
         name: Build
 
