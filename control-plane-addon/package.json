@@ -1,7 +1,7 @@
 {
-  "name": "@keptn/keptn-cp-ssp-addon",
+  "name": "@keptn/keptn-controlplane-eks-blueprints-addon",
   "version": "0.0.0-placeholder",
-  "description": "Keptn Control Plane Addon for AWS SSP CDK Platform",
+  "description": "Keptn Control Plane Addon for AWS EKS Blueprints",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/keptn-sandbox/keptn-ssp-addon.git"
+    "url": "git+https://github.com/keptn-sandbox/keptn-eks-blueprints-addon.git"
   },
   "author": "Christian Heckelmann <christian.heckelmann@dynatrace.com>",
   "license": "Apache-2.0",
@@ -23,7 +23,6 @@
     "@types/node": "10.17.27",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
-    "aws-cdk": "2.3.0",
     "eslint": "^8.6.0",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",
@@ -31,8 +30,10 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/core": "^1.135.0",
-    "@aws-quickstart/ssp-amazon-eks": "^0.12.4",
-    "@types/async": "3.2.7"
+    "@types/async": "3.2.7",
+    "constructs": "^10.0.100",
+    "source-map-support": "^0.5.16",    
+    "@aws-quickstart/eks-blueprints": "latest",
+    "aws-cdk": "^2.17.0"    
   }
 }

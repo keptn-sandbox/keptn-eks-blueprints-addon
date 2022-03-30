@@ -1,8 +1,8 @@
-import { ClusterInfo } from '@aws-quickstart/ssp-amazon-eks';
-import { HelmAddOn, HelmAddOnProps, HelmAddOnUserProps } from "@aws-quickstart/ssp-amazon-eks/dist/addons/helm-addon";
-import { Construct } from '@aws-cdk/core'
-import { getSecretValue } from "@aws-quickstart/ssp-amazon-eks/dist/utils";
-import { KubernetesManifest } from "@aws-cdk/aws-eks";
+import { ClusterInfo } from '@aws-quickstart/eks-blueprints';
+import { HelmAddOn, HelmAddOnProps, HelmAddOnUserProps } from "@aws-quickstart/eks-blueprints/dist/addons/helm-addon";
+import { Construct } from 'constructs';
+import { getSecretValue } from "@aws-quickstart/eks-blueprints/dist/utils";
+import { KubernetesManifest } from "aws-cdk-lib/aws-eks";
 
 /**
  * Configuration options for the add-on.
@@ -73,8 +73,8 @@ interface KeptnControlPlaneAddOnProps extends HelmAddOnUserProps {
 export const defaultProps: HelmAddOnProps & KeptnControlPlaneAddOnProps = {
     name: 'keptn',
     namespace: "keptn",
-    repository: "https://storage.googleapis.com/keptn-installer",
-    version: "0.11.4",
+    repository: "https://charts.keptn.sh",
+    version: "0.13.4",
     release: "keptn",
     chart: "keptn",
     ssmSecretName: "",

@@ -26,7 +26,7 @@ jobs:
         working-directory: ./${{ matrix.addons }}
         name: Lint
 
-      - run: npm run build --if-present
+      - run: make build
         working-directory: ./${{ matrix.addons }}
         name: Build
 
@@ -64,7 +64,7 @@ jobs:
       - name: Checkout Core Repo
         uses: actions/checkout@v2.4.0
         with:
-          path: 'keptn-sandbox/keptn-ssp-addons'
+          path: 'keptn-sandbox/keptn-eks-blueprints-addon'
       - name: Set up Node
         uses: actions/setup-node@v2.5.0
         with:
@@ -75,14 +75,14 @@ jobs:
       - name: Node dependencies and licenses - Execution Plane Add-On
         run: |
           echo "🔍 Analyzing dependencies in keptn-ep-add-on"
-          ( cd keptn-sandbox/keptn-ssp-addons/execution-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-ep-addon.txt )
+          ( cd keptn-sandbox/keptn-eks-blueprints-addon/execution-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-ep-addon.txt )
           echo
           echo "👍 done. written results to ./dependencies-and-licenses-ep-addon.txt"
           cat dependencies-and-licenses-ep-addon.txt
       - name: Node dependencies and licenses - Control Plane Add-On
         run: |
           echo "🔍 Analyzing dependencies in keptn-cp-add-on"
-          ( cd keptn-sandbox/keptn-ssp-addons/control-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-cp-addon.txt )
+          ( cd keptn-sandbox/keptn-eks-blueprints-addon/control-plane-addon || return ; license-report --only-prod --output=csv > ../../../dependencies-and-licenses-cp-addon.txt )
           echo
           echo "👍 done. written results to ./dependencies-and-licenses-cp-addon.txt"
           cat dependencies-and-licenses-cp-addon.txt
