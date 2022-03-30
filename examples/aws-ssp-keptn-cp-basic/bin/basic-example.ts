@@ -26,5 +26,5 @@ blueprints.EksBlueprint.builder()
     .addOns(new blueprints.addons.CoreDnsAddOn())
     .addOns(new blueprints.addons.KubeProxyAddOn())
     .addOns(new blueprints.addons.XrayAddOn())
-    //.addOns(KeptnControlPlane)
+    .addOns(KeptnControlPlane)
     .build(app, 'eks-blueprint-1');
