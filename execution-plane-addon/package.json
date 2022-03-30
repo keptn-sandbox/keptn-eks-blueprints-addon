@@ -32,11 +32,8 @@
   "dependencies": {
     "@types/async": "3.2.7",
     "constructs": "^10.0.100",
-    "source-map-support": "^0.5.16"
-  },
-  "peerDependencies": {
-    "source-map-support": "^0.5.16",
+    "source-map-support": "^0.5.16",    
     "@aws-quickstart/eks-blueprints": "latest",
-    "aws-cdk": "^2.17.0"
+    "aws-cdk": "^2.17.0"    
   }
 }
