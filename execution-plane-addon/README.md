@@ -1,8 +1,8 @@
-# Keptn Execution Plane Add-On for the Amazon Shared Services Platform
+# Keptn Execution Plane Add-On for the Amazon EKS Blueprints
 
-[![main](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-ssp-addons/actions/workflows/main.yml)
+[![main](https://github.com/keptn-sandbox/keptn-eks-blueprints-addon/actions/workflows/main.yml/badge.svg)](https://github.com/keptn-sandbox/keptn-eks-blueprints-addon/actions/workflows/main.yml)
 
-The Keptn Execution Plane Add-On for the Amazon Shared Services Platform enables platform administrators to install a [keptn](keptn.sh) Execution Plane during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
+The Keptn Execution Plane Add-On for the Amazon EKS Blueprints enables platform administrators to install a [keptn](keptn.sh) Execution Plane during the bootstrapping process of an [EKS](https://aws.amazon.com/eks/) cluster.
 
 Therefore, this Add-On installs the an Execution Plane Helm Chart and configures it to connect to your Keptn to your Keptn Control Plane
 
@@ -21,60 +21,74 @@ Therefore:
 ## Usage
 The Add-On can be used by either specifying the name of a Secrets Manager secret or the API Token and Bridge password.
 
-You can find informations how to get started with SSP Projects [here](https://aws-quickstart.github.io/ssp-amazon-eks/getting-started/). 
+You can find informations how to get started with EKS Blueprints Projects [here](https://aws-quickstart.github.io/cdk-eks-blueprints/getting-started/). 
 
 
 Example Configuration (secrets in Secrets Manager):
 
 ```typescript
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core'
-import * as keptnep from '@keptn/keptn-ep-ssp-addon'
-import * as ssp from '@aws-quickstart/ssp-amazon-eks'
+import * as cdk from 'aws-cdk-lib';
+import * as blueprints from '@aws-quickstart/eks-blueprints';
+import { KeptnExecutionPlaneAddOn } from '@keptn/keptn-executionplane-eks-blueprints-addon' 
 
 const app = new cdk.App();
+const account = '<AWS ACCOUNT ID>';
+const region = '<AWS REGION>';
 
-const KeptnExecutionPlane = new keptnep.KeptnExecutionPlaneAddOn({
+const KeptnExecutionPlane = new KeptnExecutionPlaneAddOn({
     ssmSecretName: 'keptn-secrets',
     controlPlaneHost: 'mykeptn.yourdomain.com',    
 })
 
-
-const addOns: Array<ssp.ClusterAddOn> = [
-    KeptnExecutionPlane,
-];
-
-const account = '<aws-account-id>';
-const region = '<aws-region>';
-const props = { env: { account, region } };
-new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
+blueprints.EksBlueprint.builder()
+    .account(account)
+    .region(region)
+    .addOns(new blueprints.addons.CalicoAddOn)
+    .addOns(new blueprints.addons.MetricsServerAddOn,)
+    .addOns(new blueprints.addons.ClusterAutoScalerAddOn)
+    .addOns(new blueprints.addons.ContainerInsightsAddOn)
+    .addOns(new blueprints.addons.AwsLoadBalancerControllerAddOn())
+    .addOns(new blueprints.addons.VpcCniAddOn())
+    .addOns(new blueprints.addons.CoreDnsAddOn())
+    .addOns(new blueprints.addons.KubeProxyAddOn())
+    .addOns(new blueprints.addons.XrayAddOn())
+    .addOns(KeptnExecutionPlane)
+    .build(app, 'eks-blueprint');
 ```
 
 ### Example Configuration (secrets in code and jmeter-service):
 
 ```typescript
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core'
-import * as keptnep from '@keptn/keptn-ep-ssp-addon'
-import * as ssp from '@aws-quickstart/ssp-amazon-eks'
+import * as cdk from 'aws-cdk-lib';
+import * as blueprints from '@aws-quickstart/eks-blueprints';
+import { KeptnExecutionPlaneAddOn } from '@keptn/keptn-executionplane-eks-blueprints-addon' 
 
 const app = new cdk.App();
+const account = '<AWS ACCOUNT ID>';
+const region = '<AWS REGION>';
 
-const KeptnExecutionPlane = new keptnep.KeptnControlPlaneAddOn({
+const KeptnExecutionPlane = new KeptnExecutionPlaneAddOn({
     apiToken: '<your-api-token>',
     chartName: 'jmeter-service',
     controlPlaneHost: 'mykeptn.yourdomain.com',
 })
 
-
-const addOns: Array<ssp.ClusterAddOn> = [
-    KeptnExecutionPlane,
-];
-
-const account = '<aws-account-id>';
-const region = '<aws-region>';
-const props = { env: { account, region } };
-new ssp.EksBlueprint(app, { id: '<aws-eks-cluster-name>', addOns}, props);
+blueprints.EksBlueprint.builder()
+    .account(account)
+    .region(region)
+    .addOns(new blueprints.addons.CalicoAddOn)
+    .addOns(new blueprints.addons.MetricsServerAddOn,)
+    .addOns(new blueprints.addons.ClusterAutoScalerAddOn)
+    .addOns(new blueprints.addons.ContainerInsightsAddOn)
+    .addOns(new blueprints.addons.AwsLoadBalancerControllerAddOn())
+    .addOns(new blueprints.addons.VpcCniAddOn())
+    .addOns(new blueprints.addons.CoreDnsAddOn())
+    .addOns(new blueprints.addons.KubeProxyAddOn())
+    .addOns(new blueprints.addons.XrayAddOn())
+    .addOns(KeptnExecutionPlane)
+    .build(app, 'eks-blueprint');
 ```
 
 ## Add-On Options
