@@ -1,7 +1,7 @@
 import { ClusterInfo } from '@aws-quickstart/eks-blueprints';
 import { HelmAddOn, HelmAddOnProps, HelmAddOnUserProps } from "@aws-quickstart/eks-blueprints/dist/addons/helm-addon";
 import { Construct } from 'constructs';
-import { getSecretValue } from "@aws-quickstart/eks-blueprints/dist/utils";
+import { getSecretValue, setPath } from "@aws-quickstart/eks-blueprints/dist/utils";
 import { KubernetesManifest } from "aws-cdk-lib/aws-eks";
 
 /**
@@ -265,6 +265,9 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
             this.options.apiToken = credentials.API_TOKEN
             this.options.bridgePassword = credentials.BRIDGE_PASSWORD
         }
+
+        const props = this.options;
+
         
         const namespace = this.createNamespace(clusterInfo);
         const keptnapitoken = this.createKeptnApiTokenSecret(clusterInfo);
@@ -276,13 +279,10 @@ export class KeptnControlPlaneAddOn extends HelmAddOn {
             ServiceType = 'LoadBalancer'
         }        
 
-        const keptnHelmChart = this.addHelmChart(clusterInfo, {
-            'control-plane': {
-                apiGatewayNginx: {
-                    type: ServiceType
-                }
-            }
-        });
+        const values = { ...props.values ?? {} };
+        setPath(values, "control-plane.apiGatewayNginx.type", ServiceType);
+
+        const keptnHelmChart = this.addHelmChart(clusterInfo, values);
         
         if(this.options.enableIngress) {
             const ingress = this.createIngress(clusterInfo)
