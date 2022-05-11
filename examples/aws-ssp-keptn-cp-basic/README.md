@@ -1,6 +1,6 @@
 # Keptn Control Plane Basic Example
 
-Please adjust the settings in [bin/basic-example.ts](bin/basic-examples.ts)
+Please adjust the settings in [bin/basic-example.ts](bin/basic-example.ts)
 
 ```typescript
 apiToken: '<your-api-token>',
